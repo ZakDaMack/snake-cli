@@ -1,6 +1,8 @@
 package utils
 
-import "main/pkg/models"
+import (
+	"main/pkg/models"
+)
 
 func Contains(array []models.Position, p models.Position) bool {
 	for _, i := range array {

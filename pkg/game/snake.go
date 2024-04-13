@@ -21,11 +21,14 @@ func MakeGame(height, width, speed int) {
 
 	go run(speed, snake, c)
 
-	keyEvent, err := keyboard.GetKeys(1)
+	keyEvent, err := keyboard.GetKeys(10)
 	if err != nil {
 		fmt.Println("error reading input:", err)
 		os.Exit(1)
 	}
+
+	defer keyboard.Close()
+
 	for {
 		event := <-keyEvent
 		if event.Err != nil {
@@ -47,7 +50,6 @@ func MakeGame(height, width, speed int) {
 			break
 		}
 	}
-
 }
 
 func run(speed int, snake *models.Snake, canvas *models.Canvas) {
@@ -61,10 +63,11 @@ func run(speed int, snake *models.Snake, canvas *models.Canvas) {
 		canvas.Update(newPos)
 
 		// has the snake hit itself?, if so, quit
-		if utils.Contains(newPos[:1], newPos[len(newPos)-1]) {
+		// newPos[:len(newPos)-1] get all up to last item
+		if utils.Contains(newPos[:len(newPos)-1], newPos[len(newPos)-1]) {
 			canvas.Draw()
 			fmt.Println("Game over. Score:", len(newPos))
-			return
+			os.Exit(0)
 		}
 
 		// check to see if the snake has consumed the food
