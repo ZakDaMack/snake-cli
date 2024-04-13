@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"main/pkg/models"
 	"main/pkg/utils"
+	"os"
 	"time"
+
+	"github.com/eiannone/keyboard"
 )
 
 func MakeGame(height, width, speed int) {
@@ -13,22 +16,53 @@ func MakeGame(height, width, speed int) {
 	c := models.NewCanvas(height, width)
 	upperBounds := models.Position{X: width, Y: height}
 
-	// make the sprites
+	// make the sprite
 	snake := models.NewSnake(upperBounds)
+
+	go run(speed, snake, c)
+
+	keyEvent, err := keyboard.GetKeys(1)
+	if err != nil {
+		fmt.Println("error reading input:", err)
+		os.Exit(1)
+	}
+	for {
+		event := <-keyEvent
+		if event.Err != nil {
+			panic(event.Err)
+		}
+
+		switch event.Key {
+		case keyboard.KeyArrowRight:
+			snake.ChangeDirection(models.DIRECTION_RIGHT)
+		case keyboard.KeyArrowLeft:
+			snake.ChangeDirection(models.DIRECTION_LEFT)
+		case keyboard.KeyArrowUp:
+			snake.ChangeDirection(models.DIRECTION_UP)
+		case keyboard.KeyArrowDown:
+			snake.ChangeDirection(models.DIRECTION_DOWN)
+		}
+
+		if event.Key == keyboard.KeyEsc {
+			break
+		}
+	}
+
+}
+
+func run(speed int, snake *models.Snake, canvas *models.Canvas) {
+	height, width := canvas.Size()
 	initialPos := snake.Move()
 	food := models.NewFoodItem(height, width, initialPos)
 
-	snake.ChangeDirection(models.DIRECTION_UP)
-	snake.ChangeDirection(models.DIRECTION_LEFT)
-
 	for {
-		c.Clear()              // clear canvas
+		canvas.Clear()         // clear canvas
 		newPos := snake.Move() // move snake and add to canvas
-		c.Update(newPos)
+		canvas.Update(newPos)
 
 		// has the snake hit itself?, if so, quit
 		if utils.Contains(newPos[:1], newPos[len(newPos)-1]) {
-			c.Draw()
+			canvas.Draw()
 			fmt.Println("Game over. Score:", len(newPos))
 			return
 		}
@@ -40,8 +74,8 @@ func MakeGame(height, width, speed int) {
 			food = models.NewFoodItem(height, width, newPos)
 		}
 
-		c.Update([]models.Position{food})
+		canvas.Update([]models.Position{food})
 		time.Sleep(time.Duration(speed) * time.Millisecond)
-		c.Draw()
+		canvas.Draw()
 	}
 }
