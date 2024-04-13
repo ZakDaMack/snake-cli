@@ -66,8 +66,9 @@ func run(speed int, snake *models.Snake, canvas *models.Canvas) {
 		// newPos[:len(newPos)-1] get all up to last item
 		if utils.Contains(newPos[:len(newPos)-1], newPos[len(newPos)-1]) {
 			canvas.Draw()
-			fmt.Println("Game over. Score:", len(newPos))
-			os.Exit(0)
+			fmt.Println("Game over. Score:", len(newPos), "(Press ESC to exit)")
+			return
+			// os.Exit(0)
 		}
 
 		// check to see if the snake has consumed the food
