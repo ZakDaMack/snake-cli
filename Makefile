@@ -1,5 +1,5 @@
 build:
-	go build -o bin/ cmd/snake
+	go build -o bin/snake cmd/main
 
-run: @build
+run: build
 	./bin/snake

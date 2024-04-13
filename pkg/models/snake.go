@@ -1,5 +1,7 @@
 package models
 
+import "math"
+
 type Snake struct {
 	body      []Position
 	bounds    Position
@@ -9,10 +11,10 @@ type Snake struct {
 
 const (
 	START_LENGTH    = 2
-	DIRECTION_UP    = 0
-	DIRECTION_RIGHT = 1
-	DIRECTION_DOWN  = 2
-	DIRECTION_LEFT  = 3
+	DIRECTION_UP    = 1
+	DIRECTION_DOWN  = -1
+	DIRECTION_RIGHT = 2
+	DIRECTION_LEFT  = -2
 )
 
 func NewSnake(upperBounds Position) *Snake {
@@ -37,6 +39,11 @@ func (s *Snake) IncreaseLength() {
 }
 
 func (s *Snake) ChangeDirection(direction int) {
+	// if snake tries to go back on itself, return and do nothing
+	if math.Abs(float64(direction)) == math.Abs(float64(s.direction)) {
+		return
+	}
+
 	s.direction = direction
 }
 
@@ -44,18 +51,18 @@ func (s *Snake) addHead() {
 	p := s.body[len(s.body)-1]
 	switch s.direction {
 	case DIRECTION_UP:
-		p.Y++
+		p.Y--
 	case DIRECTION_RIGHT:
 		p.X++
 	case DIRECTION_DOWN:
-		p.Y--
+		p.Y++
 	case DIRECTION_LEFT:
 		p.X--
 	}
 
 	// if the snake goes out of bounds, wrap around
-	p.X = p.X % s.bounds.X
-	p.Y = p.Y % s.bounds.Y
+	p.X = (s.bounds.X + p.X) % s.bounds.X
+	p.Y = (s.bounds.Y + p.Y) % s.bounds.Y
 	s.body = append(s.body, p)
 }
 
