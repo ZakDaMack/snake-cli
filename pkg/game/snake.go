@@ -11,7 +11,6 @@ import (
 )
 
 func MakeGame(height, width, speed int) {
-
 	// make canvas and set bounds
 	c := models.NewCanvas(height, width)
 	upperBounds := models.Position{X: width, Y: height}
@@ -35,14 +34,14 @@ func MakeGame(height, width, speed int) {
 			panic(event.Err)
 		}
 
-		switch event.Key {
-		case keyboard.KeyArrowRight:
+		switch {
+		case event.Key == keyboard.KeyArrowRight, string(event.Rune) == "d":
 			snake.ChangeDirection(models.DIRECTION_RIGHT)
-		case keyboard.KeyArrowLeft:
+		case event.Key == keyboard.KeyArrowLeft, string(event.Rune) == "a":
 			snake.ChangeDirection(models.DIRECTION_LEFT)
-		case keyboard.KeyArrowUp:
+		case event.Key == keyboard.KeyArrowUp, string(event.Rune) == "w":
 			snake.ChangeDirection(models.DIRECTION_UP)
-		case keyboard.KeyArrowDown:
+		case event.Key == keyboard.KeyArrowDown, string(event.Rune) == "s":
 			snake.ChangeDirection(models.DIRECTION_DOWN)
 		}
 
